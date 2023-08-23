@@ -1,0 +1,19 @@
+FROM python
+
+RUN mkdir /service
+
+COPY ../protobufs/ /service/protobufs/
+
+COPY ../recommendations/ /service/recommendations/
+
+WORKDIR /service/recommendations
+
+RUN python3 -m pip install --upgrade pip
+
+RUN pip3 install -r requirements.txt
+
+RUN python3 -m grpc_tools.protoc -I /service/protobufs --python_out=. --grpc_python_out=. /service/protobufs/recommendations.proto
+
+EXPOSE 50051
+
+CMD ["python3", "recommendations.py"]
